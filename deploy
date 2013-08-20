@@ -7,6 +7,7 @@ then
     echo "Commands:"
     echo "  put: Put the file(s) to the deploy target"
     echo "  get: Get the file(s) from the deploy target"
+    echo "  edit: Open the local file in an editor"
     echo "  diff: Show the diff between the local and the deployed file"
     echo 
     exit 1
@@ -14,6 +15,10 @@ fi
 
 ID=$2
 CMD=$1
+
+EDITOR=vim
+# DIFF="diff --report-identical-files --side-by-side --suppress-common-lines"
+DIFF=vimdiff
 
 if [ ! -f "deploy.conf" ]
 then
@@ -43,10 +48,15 @@ do
                 scp "${dst}" "${src}"
                 ;;
 
+            "edit" )
+                $EDITOR "${src}" < /dev/tty > /dev/tty
+                ;;
+
             "diff" )
                 tempFile=$(mktemp)
-                scp "$dst" "$tempFile"
-                diff --report-identical-files --side-by-side --suppress-common-lines "${src}" "${tempFile}"|less
+                scp "${dst}" "${tempFile}"
+                echo "Opening ${dst} as ${tempFile}"
+                $DIFF "${src}" "${tempFile}" < /dev/tty > /dev/tty
                 rm "${tempFile}"
                 ;;
         esac
