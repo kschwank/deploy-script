@@ -23,12 +23,12 @@ fi
 
 cat "deploy.conf"|while read line
 do
-    matches=$(expr match "$line" "^[^:]\+:\"[^\"]\+\"->\"[^\"]\+\"$")
+    matches=$(expr match "$line" "^[^:]\+: *\"[^\"]\+\" *-> *\"[^\"]\+\" *$")
     [ $? -eq 0 ] || continue
 
     id=$(expr "$line" : "^\([^:]\+\):.*")
-    src=$(expr "$line" : "^[^:]\+:\"\([^\"]\+\)\"->.*")
-    dst=$(expr "$line" : "^[^:]\+:\"[^\"]\+\"->\"\([^\"]\+\)\"")
+    src=$(expr "$line" : "^[^:]\+: *\"\([^\"]\+\)\" *->.*")
+    dst=$(expr "$line" : "^[^:]\+: *\"[^\"]\+\" *-> *\"\([^\"]\+\)\"")
 
     if [ "${ID}" = "${id}" ]
     then 
