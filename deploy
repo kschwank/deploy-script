@@ -49,8 +49,11 @@ do
                 diff --report-identical-files --side-by-side --suppress-common-lines "${src}" "${tempFile}"|less
                 rm "${tempFile}"
                 ;;
+            * )
+                echo "Invalid command: $CMD"
+                exit 3
+                ;;
         esac
     fi
 done
 
-echo "finished."
