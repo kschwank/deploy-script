@@ -1,0 +1,56 @@
+#!/bin/sh
+#set -x
+
+if [ $# -ne 2 ]
+then
+    echo "Usage: deploy <command> <id>"
+    echo "Commands:"
+    echo "  put: Put the file(s) to the deploy target"
+    echo "  get: Get the file(s) from the deploy target"
+    echo "  diff: Show the diff between the local and the deployed file"
+    echo 
+    exit 1
+fi
+
+ID=$2
+CMD=$1
+
+if [ ! -f "deploy.conf" ]
+then
+    echo "Could not find configuration file 'deploy.conf' in current directory"
+    exit 2
+fi
+
+cat "deploy.conf"|while read line
+do
+    matches=$(expr match "$line" "^[^:]\+:\"[^\"]\+\"->\"[^\"]\+\"$")
+    [ $? -eq 0 ] || continue
+
+    id=$(expr "$line" : "^\([^:]\+\):.*")
+    src=$(expr "$line" : "^[^:]\+:\"\([^\"]\+\)\"->.*")
+    dst=$(expr "$line" : "^[^:]\+:\"[^\"]\+\"->\"\([^\"]\+\)\"")
+
+    if [ "${ID}" = "${id}" ]
+    then 
+        case $CMD in
+            "put" )
+                echo deploying $src to $dst
+                scp "${src}" "${dst}"
+                ;;
+
+            "get" )
+                echo getting $dst to $src
+                scp "${dst}" "${src}"
+                ;;
+
+            "diff" )
+                tempFile=$(mktemp)
+                scp "$dst" "$tempFile"
+                diff --report-identical-files --side-by-side --suppress-common-lines "${src}" "${tempFile}"|less
+                rm "${tempFile}"
+                ;;
+        esac
+    fi
+done
+
+echo "finished."
