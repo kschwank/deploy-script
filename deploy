@@ -49,14 +49,14 @@ do
                 ;;
 
             "edit" )
-                $EDITOR "${src}" < /dev/tty > /dev/tty
+                $EDITOR "${src}" < /dev/tty
                 ;;
 
             "diff" )
                 tempFile=$(mktemp)
                 scp "${dst}" "${tempFile}"
                 echo "Opening ${dst} as ${tempFile}"
-                $DIFF "${src}" "${tempFile}" < /dev/tty > /dev/tty
+                $DIFF "${src}" "${tempFile}" < /dev/tty
                 rm "${tempFile}"
                 ;;
             * )
