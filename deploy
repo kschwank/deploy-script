@@ -59,8 +59,11 @@ do
                 $DIFF "${src}" "${tempFile}" < /dev/tty > /dev/tty
                 rm "${tempFile}"
                 ;;
+            * )
+                echo "Invalid command: $CMD"
+                exit 3
+                ;;
         esac
     fi
 done
 
-echo "finished."
