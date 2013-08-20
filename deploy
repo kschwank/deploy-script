@@ -20,13 +20,13 @@ EDITOR=vim
 # DIFF="diff --report-identical-files --side-by-side --suppress-common-lines"
 DIFF=vimdiff
 
-if [ ! -f "deploy.conf" ]
+if [ ! -f ".deployrc" ]
 then
-    echo "Could not find configuration file 'deploy.conf' in current directory"
+    echo "Could not find configuration file '.deployrc' in current directory"
     exit 2
 fi
 
-cat "deploy.conf"|while read line
+cat ".deployrc"|while read line
 do
     matches=$(expr match "$line" "^[^:]\+: *\"[^\"]\+\" *-> *\"[^\"]\+\" *$")
     [ $? -eq 0 ] || continue
