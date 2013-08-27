@@ -26,14 +26,10 @@ then
     exit 2
 fi
 
-matchcount=0
-
 cat ".deployrc"|while read line
 do
     matches=$(expr match "$line" "^[^:]\+: *\"[^\"]\+\" *-> *\"[^\"]\+\" *$")
     [ $? -eq 0 ] || continue
-
-    matchcount=$(( ${matchcount} + 1 ))
 
     id=$(expr "$line" : "^\([^:]\+\):.*")
     src=$(expr "$line" : "^[^:]\+: *\"\([^\"]\+\)\" *->.*")
@@ -71,8 +67,3 @@ do
     fi
 done
 
-if [ $matchcount = 0 ]
-then
-    echo "no matching id found."
-    exit 4
-fi 
