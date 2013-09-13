@@ -7,6 +7,7 @@ then
     echo "Commands:"
     echo "  put: Put the file(s) to the deploy target"
     echo "  get: Get the file(s) from the deploy target"
+    echo "  edit: Open the local file in an editor"
     echo "  diff: Show the diff between the local and the deployed file"
     echo 
     exit 1
@@ -15,13 +16,17 @@ fi
 ID=$2
 CMD=$1
 
-if [ ! -f "deploy.conf" ]
+EDITOR=vim
+# DIFF="diff --report-identical-files --side-by-side --suppress-common-lines"
+DIFF=vimdiff
+
+if [ ! -f ".deployrc" ]
 then
-    echo "Could not find configuration file 'deploy.conf' in current directory"
+    echo "Could not find configuration file '.deployrc' in current directory"
     exit 2
 fi
 
-cat "deploy.conf"|while read line
+cat ".deployrc"|while read line
 do
     matches=$(expr match "$line" "^[^:]\+: *\"[^\"]\+\" *-> *\"[^\"]\+\" *$")
     [ $? -eq 0 ] || continue
@@ -35,18 +40,23 @@ do
         case $CMD in
             "put" )
                 echo deploying $src to $dst
-                scp "${src}" "${dst}"
+                scp -r "${src}" "${dst}"
                 ;;
 
             "get" )
                 echo getting $dst to $src
-                scp "${dst}" "${src}"
+                scp -r "${dst}" "${src}"
+                ;;
+
+            "edit" )
+                $EDITOR "${src}" < /dev/tty
                 ;;
 
             "diff" )
                 tempFile=$(mktemp)
-                scp "$dst" "$tempFile"
-                diff --report-identical-files --side-by-side --suppress-common-lines "${src}" "${tempFile}"|less
+                scp "${dst}" "${tempFile}"
+                echo "Opening ${dst} as ${tempFile}"
+                $DIFF "${src}" "${tempFile}" < /dev/tty
                 rm "${tempFile}"
                 ;;
             * )
