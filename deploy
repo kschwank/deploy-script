@@ -40,12 +40,12 @@ do
         case $CMD in
             "put" )
                 echo deploying $src to $dst
-                scp "${src}" "${dst}"
+                scp -r "${src}" "${dst}"
                 ;;
 
             "get" )
                 echo getting $dst to $src
-                scp "${dst}" "${src}"
+                scp -r "${dst}" "${src}"
                 ;;
 
             "edit" )
